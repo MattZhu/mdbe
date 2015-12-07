@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="userCon">
+<table id="user"></table>
+<div id="userpager"></div>
+</div>
+
+
+<script>
+jQuery("#user").jqGrid({        
+   	url:'ws/users',
+   	height:300,
+	datatype: "json",
+   	colNames:['用户名', '密码','角色'],
+   	colModel:[
+   		{name:'userName',index:'userName', editable:true, width:100},   		
+   		{name:'password',index:'password',width:100, editable:true,formatter:function(cellvalue, options, rowObject){
+   			return "******";
+   		}, edittype:"password",align:"right"},
+   		{name:'role',index:'role',width:50, editable:true,edittype:"select",formatter:'select', editoptions:{value:'TEACHER:教师;ADMIN:管理员;STUDENT:学生'}, align:"right"},
+   		],
+   	rowNum:10,
+   	rowList:[10,20,30],
+   	pager: '#userpager',
+   	sortname: 'id',
+    viewrecords: true,
+    sortorder: "desc",
+    caption:"年级列表",
+    editurl:"ws/users"
+});
+jQuery("#user").navGrid("#userpager");
+
+
+</script>
+</body>
+</html>

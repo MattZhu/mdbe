@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+  <bean id="databaseProperties"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location">
+      <value>classpath:app.properties</value>
+    </property>
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+  </bean>
+  
+  <!-- DATA SOURCE -->
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close">
+    <property name="url" value="${database.url}" />
+    <property name="username" value="${database.username}" />
+    <property name="password" value="${database.password}" />
+    <property name="driverClassName" value="${database.driverClass}" />
+    <property name="removeAbandoned" value="true" />
+    <property name="removeAbandonedTimeout" value="60" />
+    <property name="validationQuery" value="${database.validationQuery}"></property>
+  </bean>
+
+  <!-- SESSION FACTORY -->
+  <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+        destroy-method="destroy">
+    <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration" />
+    <property name="annotatedClasses">
+      <list>
+        <value>com.mdaedu.domainobject.Charpater</value>
+        <value>com.mdaedu.domainobject.Course</value>
+        <value>com.mdaedu.domainobject.Grade</value>
+        <value>com.mdaedu.domainobject.Operation</value>
+        <value>com.mdaedu.domainobject.Questions</value>
+        <value>com.mdaedu.domainobject.Subject</value>
+        <value>com.mdaedu.domainobject.User</value>
+        <value>com.mdaedu.domainobject.Video</value>
+        <value>com.mdaedu.domainobject.Publisher</value>
+      </list>
+    </property>
+    <property name="dataSource" ref="dataSource" />
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">${database.dialect}</prop>
+  
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+  	<!-- 
+          <prop key="hibernate.hbm2ddl.auto">create</prop> 
+        -->
+        <prop key="hibernate.show_sql">true</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- TRANSACTION MANAGER -->
+  <bean id="transactionManager"
+        class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <!-- ANNOTATION DRIVEN TRANSACTIONS -->
+  <tx:annotation-driven transaction-manager="transactionManager" />
+
+  
+ <!--
+  <bean id="alarmDAO"
+        class="com.cpcus.alarm.paorchestrator.dataaccess.impl.PersistableAlarmDAOImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="siteDAO"
+        class="com.cpcus.alarm.paorchestrator.dataaccess.impl.PersistableSiteDAOImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="applicationState"
+        class="com.cpcus.alarm.paorchestrator.biz.ApplicationState">
+  </bean>
+
+  <bean id="mailExecutor"
+        class="com.cpcus.alarm.paorchestrator.runtime.MailEventExecutor">
+    <constructor-arg><ref bean="mailSender" /></constructor-arg>
+  </bean>
+
+  <bean id="filteringRuleParser"
+        class="com.cpcus.alarm.paorchestrator.configuration.FilteringRuleParser">
+  </bean>
+
+  <bean id="emergencyShutdownExecutor"
+        class="com.cpcus.alarm.paorchestrator.runtime.EmergencyShutdownEventExecutor">
+    <property name="applicationState" ref="applicationState" />
+    <property name="sendMailDelay" value="${orchestrator.mail.initialDelay}" />
+    <property name="sendMailInterval" value="${orchestrator.mail.interval}" />
+    <property name="mailExecutor" ref="mailExecutor" />
+    <property name="mailFrom" value="${mail.address.from}" />
+    <property name="connectedSubject" value="${orchestrator.mail.subject.connected}" />
+    <property name="disconnectedSubject" value="${orchestrator.mail.subject.disconnected}" />
+    <property name="mailAddressList" value="${orchestrator.mail.address.list}" />
+  	<property name="recieverHost" value="${reciever.host}" />
+  </bean>
+
+  <bean id="mssSync"
+        class="com.cpcus.alarm.paorchestrator.remote.MssSyncImpl">
+    <property name="batchSize" value="100" />
+    <property name="primaryImportService" ref="primaryMssImportService" />
+    <property name="backupImportService" ref="backupMssImportService" />
+    <property name="siteDao" ref="siteDAO" />
+    <property name="primaryMailAddress" value="${mss.primary.service.failed.mail.address}" />
+    <property name="backupMailAddress" value="${mss.sync.failed.mail.address}" />
+    <property name="mailExecutor" ref="mailExecutor" />
+    <property name="applicationState" ref="applicationState" />
+    <property name="recieverHost" value="${reciever.host}" />
+  </bean>
+
+  <bean id="paOrchestrator" 
+        class="com.cpcus.alarm.paorchestrator.biz.impl.PersistenceAwareOrchestratorImpl">
+    <property name="receiverService" ref="alarmReceiverService" />
+    <property name="parserService" ref="alarmParserService" />
+    <property name="brokerService" ref="alarmBrokerService" />
+    <property name="siteService" ref="siteService" />
+    <property name="alarmDAO" ref="alarmDAO" />
+    <property name="siteDAO" ref="siteDAO" />
+    <property name="mssSync" ref="mssSync" />
+    <property name="mssSyncRetryInterval" value="${mss.sync.retryInterval}" />
+    <property name="maxSendAttempts" value="3" />
+    <property name="mailExecutor" ref="mailExecutor" />
+    <property name="applicationState" ref="applicationState" />
+    <property name="timerInterval" value="${orchestrator.timer.interval}" />
+    <property name="emergencyShutdownExecutor" ref="emergencyShutdownExecutor" />
+    <property name="maxSize" value="500" />
+    <property name="filteringRuleParser" ref="filteringRuleParser" />
+  </bean>
+  
+  <bean id="orchestratorRunnable" 
+  		class="com.cpcus.alarm.paorchestrator.runtime.OrchestratorRunnable">
+  	<property name="orchestrator" ref="paOrchestrator" />
+  </bean>
+  -->
+  <!-- ENABLE THE @AUTOWIRED -->
+  <context:annotation-config />
+  
+    <!-- 使用注解的包路径 -->  
+  <context:component-scan base-package="com.mdaedu"/>
+
+</beans>

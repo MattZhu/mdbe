@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="gradeCon">
+<table id="grade"></table>
+<div id="gradepager"></div>
+</div>
+
+<div id="subjectCon" >
+<table id="subject"></table>
+<div id="subjectpager"></div>
+</div>
+
+<div id="publicsherCon" >
+<table id="publicsher"></table>
+<div id="publicsherpager"></div>
+</div>
+<script>
+jQuery("#grade").jqGrid({        
+   	url:'ws/grades',
+   	height:300,
+	datatype: "json",
+   	colNames:['年级', '顺序'],
+   	colModel:[
+   		{name:'name',index:'name', editable:true, width:200},   		
+   		{name:'seq',index:'seq',width:30, editable:true, align:"right"},
+   		],
+   	rowNum:10,
+   	rowList:[10,20,30],
+   	pager: '#gradepager',
+   	sortname: 'id',
+    viewrecords: true,
+    sortorder: "desc",
+    caption:"年级列表",
+    editurl:"ws/grades"
+});
+jQuery("#grade").navGrid("#gradepager");
+
+jQuery("#subject").jqGrid({        
+   	url:'ws/subjects',
+   	height:300,
+	datatype: "json",
+   	colNames:['科目', '顺序'],
+   	colModel:[
+   		{name:'name',index:'name', editable:true, width:200},   		
+   		{name:'seq',index:'seq',width:30, editable:true, align:"right"},
+   		],
+   	rowNum:10,
+   	rowList:[10,20,30],
+   	pager: '#subjectpager',
+   	sortname: 'id',
+    viewrecords: true,
+    sortorder: "desc",
+    caption:"科目列表",
+    editurl:"ws/subjects"
+});
+jQuery("#subject").navGrid("#subjectpager");
+
+jQuery("#publicsher").jqGrid({        
+   	url:'ws/publishers',
+   	height:300,
+	datatype: "json",
+   	colNames:['出版社', '顺序'],
+   	colModel:[
+   		{name:'name',index:'name', editable:true, width:200},   		
+   		{name:'seq',index:'seq',width:30, editable:true, align:"right"},
+   		],
+   	rowNum:10,
+   	rowList:[10,20,30],
+   	pager: '#publicsherpager',
+   	sortname: 'id',
+    viewrecords: true,
+    sortorder: "desc",
+    caption:"科目列表",
+    editurl:"ws/publishers"
+});
+jQuery("#publicsher").navGrid("#publicsherpager");
+</script>
+</body>
+</html>

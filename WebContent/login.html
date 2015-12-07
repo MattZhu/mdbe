@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>明大教育</title>
+<script src="js/jquery-1.11.0.min.js"></script>
+<script src="js/i18n/grid.locale-cn.js"></script>
+<script src="js/jquery.jqGrid.min.js"></script>
+<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+<script src="js/ajaxfileupload.js"></script>
+<script src="js/jqmath-etc-0.4.2.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.4.custom.min.css" />
+<link rel="stylesheet" type="text/css" href="css/ui.jqgrid.css" />
+<link rel="stylesheet" href="css/jqmath-0.4.0.css">
+
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+
+
+</head>
+<body>
+<div id="title">课程管理后台</div>
+<div id="tabs">
+  <ul></ul>
+</div>
+
+<div id="errorMessage"></div>
+<form method="post" id="loginForm">
+<table>
+<tr><td><label>用户名：</label></td><td><input name="username"/></td></tr>	
+<tr><td><label>密 码：</label></td><td><input name="password" type="password"/></td></tr>
+<tr><td colspans="2"><button>登录</button></td></tr>
+</table>	
+	<!-- <button>注册</button> -->
+</form>
+</div>
+<script>
+// Attach a submit handler to the form
+$( "#loginForm" ).submit(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+ 
+    url ="ws/users/login";
+ 
+  // Send the data using post
+  var posting = $.post( url, $( this ).serialize() );
+ 
+  // Put the results in a div
+  posting.done(function( data ) {
+    var content = $( data )[0];
+    if(content){
+
+    	$("#errorMessage").html("");
+    	$("#loginForm").remove();
+    	//buildNav(content.ops);
+    	buildTabs(content.ops);
+    }else{
+    	$("#errorMessage").html("无效的用户名或密码！");
+    }
+   
+  });
+});
+
+function buildTabs(ops){
+	var tabTemplate = "<li><a href='#{href}'>#{label}</a></li>";
+	var tabs = $( "#tabs" ).tabs();
+	for(var i=0;i<ops.length;i++){
+		var	li = $( tabTemplate.replace( /#\{href\}/g, ops[i].url ).replace( /#\{label\}/g, ops[i].name ) )
+		tabs.find( ".ui-tabs-nav" ).append( li );
+	}
+	tabs.tabs( "refresh" );
+	tabs.addClass( "ui-tabs-vertical ui-helper-clearfix" );
+	$( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+	
+}
+	function buildNav(ops){
+		var nav=$("#nav");
+		for(var i=0;i<ops.length;i++){
+			var link="<a href ='#' onclick=nav('"+ops[i].url+"') >"+ops[i].name+"</a><br>";
+			nav.append(link);
+		}
+	}
+	function nav(op){
+		if(op=='course')
+		{
+			$.get( "course.htm", function( data ) {
+				  $( "#content" ).html( data );
+				});
+		}
+		else if(op=="base")
+		{
+			$.get( "management.html", function( data ) {
+				  $( "#content" ).html( data );
+				});	
+		}
+		else if(op=="user")
+		{
+			$.get( "user.html", function( data ) {
+				  $( "#content" ).html( data );
+				});	
+		}else if(op=="dlclient"){
+			$.get( "dlclient.htm", function( data ) {
+				  $( "#content" ).html( data );
+				});	
+		}
+	}
+</script>
+</body>
+</html>

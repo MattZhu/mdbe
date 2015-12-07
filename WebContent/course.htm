@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Cousre Manager</title>
+</head>
+<body>
+<iframe id="data" name="data"></iframe>
+<div>
+<table id="courselist"></table>
+<div id="coursepager"></div>
+
+<div id="videoListDialog" title="章节视频">
+	<button id="newVideo" onclick="editVideo()">新增视频</button>
+	<div id="videolist"></div>
+</div>
+<div id="manageVedio" title="视频管理">
+	<img id="loading" src="images/loading.gif" style="display:none;">
+	<form id="uploadForm" target="data" action="ws/videos/upload/" method="POST" enctype="multipart/form-data">
+		视频文件：<input id="vedioFile" type="file" name="vedioFile" accept=".mp4"/><br>
+		视频描述：<input id="videoName" name="videoName"/><br>
+		<input id="chid" name="chid" type="hidden"/>	
+		<input id="vid" name="vid" type="hidden"/>		
+	</form>
+	<div id="videoView" style="display:none;" >
+		视频查看：<br/>
+		<video id="videoPreView" src="" width="320" height="240" controls="controls">
+			您的浏览器不支持视频播放。
+		</video>
+	</div>
+	<div id="videoMsg">注意：保存将会覆盖原有的文件！</div>
+</div>
+<div id="manageQimage" title="图片管理">
+	<img id="loading" src="images/loading.gif" style="display:none;">
+	<form id="uploadImageForm" target="data" action="ws/questions/image" method="POST" enctype="multipart/form-data">
+		<input id="imageFile" type="file" name="imageFile" accept="image/*"/>
+		<input id="image_qid" name="qId" type="hidden"/>	
+	</form>
+	<img id="qImage" alt="" src="" width="200" height="200" style="display:none"/><br/>
+</div>
+
+<div id="manageCourseImage" title="图片管理">
+	<img id="loading" src="images/loading.gif" style="display:none;">
+	<form id="uploadCourseImageForm" target="data" action="ws/courses/image" method="POST" enctype="multipart/form-data">
+		<input id="courseImageFile" type="file" name="courseImageFile" accept="image/*"/>
+		<input id="image_cid" name="cId" type="hidden"/>	
+	</form>
+	<img id="cImage" alt="" src="" width="200" height="200" style="display:none"/><br/>
+</div>
+<div id="qListDialog" title="习题">
+	<button id="newQ" onclick="addQeuestion()">新增习题</button>
+	<div id="qlist"></div>
+</div>
+<div id="qdelDialog" title="习题删除">
+	删除所选习题？
+</div>
+<div id="vdelDialog" title="视频删除">
+	删除所选视频？
+</div>
+<div id="qEdit" title="习题编辑">
+	<table >
+	<tr><td width="50%">
+	<div id="qE">
+	<form id="qEditForm" name="qEditForm" action="ws/questions" method="POST"  target="data" >
+		<label style="vertical-align: top">题目:</label><textarea rows="2" cols="40" id="qtitle" name="qtitle" onkeyup="keyupFn(this)" style="vertical-align: top"></textarea><br/>
+		<label>类型:</label><select id="qtype" name="qtype" onchange="qtypech()"><option value="1">单选</option>
+		<option value="2">多选</option>
+		<option value="3">判断</option>
+		</select><button name="addOptions" id="addOptions" type="button" onclick="addOptionsFn()">添加选项</button><br/>
+		<table id="qOptionsTable">
+			<thead>
+				<tr><th>选项</th><th>是否答案</th></tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+		<label>解答:</label><textarea rows="3" cols="40" id="qexplaination" name="qexplaination" style="vertical-align: top"></textarea>
+		<input name="answer" id="answer" type="hidden"/>
+		<input id="chId" name="chId" type="hidden"/>
+		<input id="qid" name="qid" type="hidden"/>
+	</form>
+	</div>
+	</td>
+	<td width="5%"></td>
+	<td valign="top">
+	<div id="qPreview" style="">
+		<div>习题预览:</div>
+		<div id="qPreviewTitle"></div>
+		<br>
+		<div id="qPreviewOptions"></div>
+	</div>
+	</td>
+	</table>
+</div>
+</div>
+<script src="js/course.js"></script>
+</body>
+</html>
